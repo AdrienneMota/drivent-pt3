@@ -11,7 +11,6 @@ export async function getAllHotels(req: AuthenticatedRequest, res: Response) {
 
     return res.status(httpStatus.OK).send(hotels);//200
   } catch (error) {    
-    console.log(error)
     if(error.name === "NotFoundError"){
       return res.sendStatus(httpStatus.NOT_FOUND); 
     }
@@ -25,7 +24,7 @@ export async function getAllHotels(req: AuthenticatedRequest, res: Response) {
 }
 
 export async function getRoomsByHotelId(req: AuthenticatedRequest, res: Response) {
-  const hotelId = req.params;
+  const {hotelId} = req.params;
   const { userId } = req;
 
 
