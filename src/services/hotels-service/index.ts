@@ -3,6 +3,7 @@ import { paymentRequiredError } from "@/errors/paymente-required";
 import enrollmentRepository from "@/repositories/enrollment-repository";
 import hotelRepository from "@/repositories/hotel-repository";
 import ticketRepository from "@/repositories/ticket-repository";
+import { TicketStatus } from "@prisma/client";
 import { PAYMENT_REQUIRED } from "http-status";
 
 
@@ -12,7 +13,7 @@ async function getAllHotels(userId : number) {
     throw notFoundError();
   }
 
-  const enrollment = await enrollmentRepository.findById(userId)
+  const enrollment = await enrollmentRepository.findWithAddressByUserId(userId)
   if(!enrollment){
     throw notFoundError(); 
   }
@@ -22,11 +23,12 @@ async function getAllHotels(userId : number) {
     throw notFoundError(); 
   }
 
-  if(ticket.status === 'RESERVED'){
+  console.log(ticket)
+  if(ticket.status === TicketStatus.RESERVED){
     throw paymentRequiredError(); 
   }
 
-  const { TicketType } = await ticketRepository.findTickeWithTypeById(ticket.id)
+  const { TicketType } = ticket
   if((TicketType.isRemote) || (!TicketType.includesHotel)){
     throw paymentRequiredError();
   }
